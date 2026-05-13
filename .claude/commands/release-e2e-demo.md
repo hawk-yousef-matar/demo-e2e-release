@@ -88,7 +88,7 @@ Only proceed after explicit user approval.
 
 ## Step 5: Create releases in order
 
-For each commit (oldest to newest), create a release:
+For each commit (oldest to newest), create a release. Retry up to 3 times with a 3-second pause between attempts to handle GitHub tag propagation delays:
 
 ```bash
 gh release create <NEW_VERSION> \
@@ -99,6 +99,8 @@ gh release create <NEW_VERSION> \
   --notes-start-tag <PREVIOUS_VERSION> \
   --latest
 ```
+
+If all 3 attempts fail, report the error clearly and stop — do not fall back to manual `--notes`.
 
 Where `<PREVIOUS_VERSION>` is the tag immediately before this one (the original latest release for the first commit, or the just-created tag for subsequent ones).
 
@@ -130,7 +132,7 @@ After all releases are created, present:
 - **Pagination needed**: If `total_commits > commits.length`, paginate with `per_page=100`. If > 500 total, warn the user and ask to proceed.
 - **PR not found for commit**: Default to patch, log a clear warning with the commit SHA and message.
 - **Missing version label on PR**: Default to patch, log warning.
-- **Release creation timeout/failure**: If `gh release create` fails but the tag already exists on retry check, it succeeded — skip and continue. If it fails with 422 "tag already exists" (from a previous partial run), skip gracefully and continue with remaining releases.
+- **Release creation timeout/failure**: Retry up to 3 times with a 3-second pause between each attempt (GitHub's generate-notes API can return 500 when the previous tag hasn't fully propagated yet). If all 3 attempts fail, stop and report. If the tag already exists on retry, it succeeded — skip and continue. If it fails with 422 "tag already exists" (from a previous partial run), skip gracefully and continue with remaining releases.
 - **Rate limiting**: If API calls return 429 or secondary rate limit errors, pause and inform the user.
 - **Partial completion**: If some releases succeed and others fail, report what was created and what remains, so the user can re-run the skill for the remainder.
 

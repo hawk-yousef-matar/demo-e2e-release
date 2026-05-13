@@ -23,14 +23,16 @@ done
 git checkout main
 git pull origin main
 
+RUN_ID=$(date +%s)
+
 # ── PR 1: patch ───────────────────────────────────────────────────────────────
 echo "→ PR 1 (patch): Fix typo in e2e config"
 git checkout -b fix/correct-typo-in-config
 
-cat > e2e.config.js << 'EOF'
+cat > e2e.config.js << EOF
 module.exports = {
   baseUrl: "https://app.hawk.ai",
-  timeout: 30000,
+  timeout: 30000, // run $RUN_ID
 };
 EOF
 
@@ -58,7 +60,8 @@ echo "→ PR 2 (minor): Add ERD e2e test suite"
 git checkout -b feat/add-erd-e2e-tests
 
 mkdir -p tests
-cat > tests/erd.spec.js << 'EOF'
+cat > tests/erd.spec.js << EOF
+// run $RUN_ID
 describe("ERD", () => {
   it("renders entity relationship diagram", async () => {
     await page.goto("/erd");
@@ -90,7 +93,8 @@ echo "  ✓ PR #$PR2 merged (minor)"
 echo "→ PR 3 (major): Migrate test runner to Playwright"
 git checkout -b feat/migrate-to-playwright
 
-cat > playwright.config.js << 'EOF'
+cat > playwright.config.js << EOF
+// run $RUN_ID
 module.exports = {
   testDir: "./tests",
   use: {

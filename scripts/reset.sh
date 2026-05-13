@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Always run from repo root regardless of where the script is invoked from
+cd "$(dirname "$0")/.."
+
 REPO="hawk-yousef-matar/demo-e2e-release"
 BASE_COMMIT="$(git rev-parse HEAD)"  # always reset to wherever main currently is after this commit
 

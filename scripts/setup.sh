@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Always run from repo root regardless of where the script is invoked from
+cd "$(dirname "$0")/.."
+
 REPO="hawk-yousef-matar/demo-e2e-release"
 
 echo "Setting up demo PRs..."
@@ -35,15 +38,15 @@ git commit -m "fix: correct typo in e2e config"
 git push origin fix/correct-typo-in-config
 git checkout main
 
-PR1=$(gh pr create \
+gh pr create \
   --repo "$REPO" \
   --title "Fix typo in e2e config" \
   --body "Fixes a typo in the e2e configuration file." \
   --base main \
   --head fix/correct-typo-in-config \
-  --label "patch-version" \
-  --json number --jq '.number')
+  --label "patch-version"
 
+PR1=$(gh pr view fix/correct-typo-in-config --repo "$REPO" --json number --jq '.number')
 gh pr merge "$PR1" --repo "$REPO" --squash --delete-branch
 git branch -D fix/correct-typo-in-config 2>/dev/null || true
 git pull origin main
@@ -68,15 +71,15 @@ git commit -m "feat: add ERD e2e test suite"
 git push origin feat/add-erd-e2e-tests
 git checkout main
 
-PR2=$(gh pr create \
+gh pr create \
   --repo "$REPO" \
   --title "Add ERD e2e test suite" \
   --body "Adds end-to-end tests for the entity relationship diagram." \
   --base main \
   --head feat/add-erd-e2e-tests \
-  --label "minor-version" \
-  --json number --jq '.number')
+  --label "minor-version"
 
+PR2=$(gh pr view feat/add-erd-e2e-tests --repo "$REPO" --json number --jq '.number')
 gh pr merge "$PR2" --repo "$REPO" --squash --delete-branch
 git branch -D feat/add-erd-e2e-tests 2>/dev/null || true
 git pull origin main
@@ -101,15 +104,15 @@ git commit -m "feat!: migrate test runner to Playwright"
 git push origin feat/migrate-to-playwright
 git checkout main
 
-PR3=$(gh pr create \
+gh pr create \
   --repo "$REPO" \
   --title "Migrate test runner to Playwright" \
   --body "Breaking change: replaces the existing test runner with Playwright." \
   --base main \
   --head feat/migrate-to-playwright \
-  --label "major-version" \
-  --json number --jq '.number')
+  --label "major-version"
 
+PR3=$(gh pr view feat/migrate-to-playwright --repo "$REPO" --json number --jq '.number')
 gh pr merge "$PR3" --repo "$REPO" --squash --delete-branch
 git branch -D feat/migrate-to-playwright 2>/dev/null || true
 git pull origin main

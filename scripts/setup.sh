@@ -14,9 +14,10 @@ gh label create "patch-version"  --repo "$REPO" --color "0075ca" --description "
 gh label create "minor-version"  --repo "$REPO" --color "e4e669" --description "Bump minor version"  2>/dev/null || true
 gh label create "major-version"  --repo "$REPO" --color "d73a4a" --description "Bump major version"  2>/dev/null || true
 
-# Clean up any leftover local branches from a previous failed run
+# Clean up any leftover branches (local + remote) from a previous failed run
 for branch in fix/correct-typo-in-config feat/add-erd-e2e-tests feat/migrate-to-playwright; do
   git branch -D "$branch" 2>/dev/null || true
+  git push origin --delete "$branch" 2>/dev/null || true
 done
 
 git checkout main
